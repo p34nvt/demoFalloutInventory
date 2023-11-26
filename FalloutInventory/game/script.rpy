@@ -5,18 +5,19 @@ style item:
     hover_color "#44ff44"
     antialias False
 
-init python:
-    from time import sleep
-#item detail variable
-    indice = 0
-#item filter variable
-    filtro = 0
-#short list of items
-    filtrada = []
-#details variables
-    peso, valor, imagen, texto = "", "", "", ""
+#set empty item detail variable
+default indice = 0
+#set empty item filter variable
+default filtro = 0
+#set empty short list of items
+default filtrada = []
+#set empty details variables
+default peso = ""
+default valor = ""
+default imagen = ""
+default texto = ""
 #item list
-    itemlist = [
+default itemlist = [
         {
             "name": "Stimpak",
             "category_id": 1,
@@ -130,7 +131,7 @@ init python:
             "quantity": 3
         }
     ]
-
+#base screen
 screen display_1():
     frame:
         background Solid("#002200")
@@ -138,36 +139,38 @@ screen display_1():
         ysize 600
         xpos 0.2
         ypos 0.05
-
+#viewport containing the items
     frame:
-        background Solid("#002200")     # or use any semi-transparent image you like
+        background Solid("#002200")
         align (0.35, 0.5)
-        
+        #side of scrollbar
         side "c l":
             area (0, 0, 500, 300)
-
+#viewport id for reference
             viewport id "vp":
-
+#vieport properties
                 draggable True
                 mousewheel True
                 arrowkeys True
-
+#vbox to fix content listing
                 vbox:
                     python:
-                        print(str(indice)+" "+str(len(filtrada)))
+                        #if filter is not set the list with items is copied completely
                         if filtro==0:
                             filtrada = []
                             filtrada = itemlist.copy()
+                        #otherwise each item is filtered by the category selected
                         else:
                             filtrada = []
                             for dicti in itemlist:
                                 if filtro==dicti["category_id"]:
                                     filtrada.append(dicti)
-                                    print(str(indice)+" "+str(len(filtrada)))
                                 indice+=1
+                            #reset index counter of each item in the list
                             if indice>=len(filtrada):
                                 indice=0
                     #end of python block
+                #iterate filtered list and proyect to textbutton to show stadistics
                     for dicti in filtrada:
                         $ name = dicti["name"]
                         $ qua = dicti["quantity"]
@@ -187,10 +190,10 @@ screen display_1():
         vbox:
             text "weight [peso]kg" size 18 antialias False
             text "value $[valor]" size 18 antialias False
-
+#TODO this image can be changed to match item approach
     image "images/trollface.jpg" xpos 0.55 ypos 0.2
     text texto size 14 xpos 0.5 ypos 0.55
-
+#filters tabs
     hbox:
         xalign 0.5
         yalign 0.1
@@ -210,6 +213,4 @@ label setdetails(dicti):
 # The game starts here.
 label start:
     scene desert
-    #pause 0.05
     call screen display_1
-
